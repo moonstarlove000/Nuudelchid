@@ -50,6 +50,7 @@ label{display:block;font-weight:600;font-size:14px;margin:12px 0 4px}
 .err{color:#C0392B;font-size:13px;min-height:18px;margin-top:6px}
 .ok{color:var(--ok);font-weight:800}
 footer{color:var(--mute);font-size:13px;padding:28px 0 36px;text-align:center}
+.act{display:flex;align-items:center;flex-wrap:wrap;gap:10px 16px;margin-top:16px}.act .btn{margin:0}.act .ph{margin:0}
 .ph{font-weight:800;font-size:17px;margin:16px 0 0}.ph a{color:var(--brand)}
 .postrow{margin:14px 0 0;display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;border:2px solid var(--brand);border-radius:14px;padding:16px 18px;background:var(--card)}.postrow b{font-size:18px}.postrow span{color:var(--mute);font-size:14px}.postrow .btn{margin:0;font-size:18px;padding:14px 26px}@media (max-width:520px){.postrow .btn{width:100%}}.pitem{background:var(--card);border:1px dashed var(--brand);border-radius:12px;padding:12px 16px;margin-bottom:8px}.pitem .btn{margin:8px 8px 0 0;padding:8px 14px;font-size:14px}
 .local{background:var(--brand);color:var(--brandink);border-radius:14px;padding:22px 22px;margin:18px 0 6px;display:flex;justify-content:space-between;align-items:center;gap:16px;flex-wrap:wrap}
@@ -80,29 +81,10 @@ footer a{color:inherit;font-weight:800}
 <section class="local" aria-labelledby="localT"><div><h2 id="localT">Орон нутагт ажиллах ажил байна</h2><p>Орон нутагт ажиллах сонирхолтой бол утсаар холбогдож дэлгэрэнгүй лавлана уу.</p></div><a class="call" href="tel:80305373">Залгах: 8030-5373</a></section>
 <div class="postrow"><div><b>Ажил олгогч уу?</b><br><span>Ажлын байрны зараа энд оруулаарай.</span></div><button class="btn" id="postBtn">+ Зар нэмэх</button></div>
 <div id="pend"></div>
-<div id="apps"></div>
 <div class="count" id="count" aria-live="polite"></div>
 <main id="list"></main>
 <footer>© 2026 Нүүдэлчид. Холбоо барих: <a href="tel:80305373">8030-5373</a></footer>
 </div>
-
-<dialog id="dlg">
-<div id="formBox">
-<h3>Хүсэлт илгээх</h3>
-<div id="dTitle" style="color:var(--mute);font-size:14px"></div>
-<label for="fn">Овог нэр</label><input id="fn" autocomplete="name">
-<label for="fp">Утасны дугаар</label><input id="fp" type="tel" inputmode="tel" autocomplete="tel">
-<label for="fe">И-мэйл</label><input id="fe" type="email" autocomplete="email">
-<label for="fm">Товч танилцуулга</label><textarea id="fm" rows="3"></textarea>
-<div class="err" id="err" role="alert"></div>
-<button class="btn" id="send">Хүсэлт илгээх</button><button class="btn ghost" id="cancel">Болих</button>
-</div>
-<div id="doneBox" style="display:none">
-<h3 class="ok">Хүсэлт илгээгдлээ</h3>
-<p style="color:var(--mute)">Хүсэлтээ илгээж дуусгахын тулд доорх "Имэйлээр илгээх" товчийг дарна уу. Эсвэл 8030-5373 дугаарт залгана уу.</p>
-<a class="btn" id="mailBtn" href="#" target="_blank" rel="noopener" style="display:inline-block;text-decoration:none">Имэйлээр илгээх</a> <button class="btn ghost" id="close">Хаах</button><p class="ok" id="mailOk" hidden>✓ Амжилттай! Имэйлийн цонх нээгдлээ. Имэйлээ илгээсний дараа "Хаах" дарж дуусгаарай.</p>
-</div>
-</dialog>
 
 <dialog id="pdlg"><div id="pForm"><h3>Ажлын зар нэмэх</h3>
 <label for="pt">Ажлын байрны нэр</label><input id="pt" maxlength="80">
@@ -168,40 +150,22 @@ function render(){
  var r=ALL().filter(function(j){return (!q||(j.t+" "+j.c).toLowerCase().indexOf(q)>-1)&&(!cat||j.cat===cat)&&(!loc||(LM[j.loc]||j.loc)===loc)&&(!typ||(TM[j.type]||j.type)===typ)&&(!sm||(j.sum||SM[j.loc])===sm)});
  $("count").textContent=r.length+" нээлттэй ажлын байр";
  $("list").innerHTML=r.length?r.map(function(j){
-  return '<article class="job" id="j'+j.id+'"><button aria-expanded="false" data-t="'+j.id+'"><div class="row"><div><div class="title">'+esc(j.t)+'</div><div class="co">'+esc(j.c)+'</div></div><div class="pay">'+esc(j.pay)+'</div></div><div class="tags"><span class="tag">'+esc(j.loc)+(j.sum?", "+esc(j.sum):"")+'</span><span class="tag">'+esc(j.type)+'</span><span class="tag">'+esc(j.cat)+'</span></div></button><div class="detail"><p>'+esc(j.d)+'</p><h4>Тавигдах шаардлага</h4><ul>'+j.req.map(function(x){return "<li>"+esc(x)+"</li>"}).join("")+'</ul>'+'<p class="ph">☎️ Ажил олгогчийн утас: <a href="tel:'+esc((j.phone||"80305373").replace(/[^0-9+]/g,""))+'">'+esc(j.phone||"8030-5373")+'</a></p>'+'<button class="btn" data-a="'+j.id+'">Хүсэлт илгээх</button></div></article>'
+  return '<article class="job" id="j'+j.id+'"><button aria-expanded="false" data-t="'+j.id+'"><div class="row"><div><div class="title">'+esc(j.t)+'</div><div class="co">'+esc(j.c)+'</div></div><div class="pay">'+esc(j.pay)+'</div></div><div class="tags"><span class="tag">'+esc(j.loc)+(j.sum?", "+esc(j.sum):"")+'</span><span class="tag">'+esc(j.type)+'</span><span class="tag">'+esc(j.cat)+'</span>'+'</div></button><div class="detail"><p>'+esc(j.d)+'</p><h4>Тавигдах шаардлага</h4><ul>'+j.req.map(function(x){return "<li>"+esc(x)+"</li>"}).join("")+'</ul>'+'<div class="act">'+(j.phone&&String(j.phone).replace(/\D/g,"")!=="80305373"?'<span class="ph">☎️ Зар тавигчийн утас: <a href="tel:'+esc(String(j.phone).replace(/[^0-9+]/g,""))+'">'+esc(j.phone)+'</a></span>':"")+'</div></div></article>'
  }).join(""):'<div class="empty">Тохирох ажлын байр олдсонгүй. Шүүлтүүрээ өөрчилж үзнэ үү.</div>';
 }
 $("list").addEventListener("click",function(e){
- var t=e.target.closest("[data-t]"),a=e.target.closest("[data-a]");
+ var t=e.target.closest("[data-t]");
  if(t){var el=$("j"+t.dataset.t);var o=el.classList.toggle("open");t.setAttribute("aria-expanded",o)}
- if(a){cur=ALL().filter(function(j){return j.id==a.dataset.a})[0];$("dTitle").textContent=cur.t+" · "+cur.c;$("formBox").style.display="";$("doneBox").style.display="none";$("err").textContent="";$("dlg").showModal()}
 });
 ["q","cat","loc","sum","typ"].forEach(function(i){$(i).addEventListener("input",render)});
-$("cancel").onclick=$("close").onclick=function(){$("dlg").close()};
-$("send").onclick=async function(){
- var n=$("fn").value.trim(),p=$("fp").value.trim(),m=$("fe").value.trim();
- if(!n){$("err").textContent="Овог нэрээ оруулна уу.";return}
- if(!/^[0-9+\s-]{8,}$/.test(p)){$("err").textContent="Утасны дугаараа зөв оруулна уу (8 орон).";return}
- if(!/^\S+@\S+\.\S+$/.test(m)){$("err").textContent="И-мэйл хаягаа зөв оруулна уу.";return}
- var key=cur.id+"|"+p.replace(/\D/g,""),seen={};try{seen=JSON.parse(localStorage.getItem("applied")||"{}")}catch(x){}
- if(seen[key]){$("err").textContent="Та энэ ажилд өмнө нь хүсэлт илгээсэн байна.";return}
- $("send").disabled=true;
- if(DB&&UID)
- try{var r=DB.collection("applications").doc(UID),sn=await r.get(),old=(sn.exists&&sn.data().items)||[];if(!old.some(function(z){return z.job===String(cur.id)&&String(z.phone).replace(/\D/g,"")===p.replace(/\D/g,"")}))await r.set({items:old.concat([{id:"a"+Date.now(),job:String(cur.id),jt:cur.t,jc:cur.c,jph:cur.phone||"",name:n,phone:p,email:m,msg:$("fm").value.trim().slice(0,500),at:Date.now()}]).slice(-20)})}catch(x){}
- try{seen[key]=1;localStorage.setItem("applied",JSON.stringify(seen))}catch(x){}
- $("send").disabled=false;
- $("mailOk").hidden=true;$("mailBtn").href="mailto:Saraasaranod000@gmail.com?subject="+encodeURIComponent("Ажлын хүсэлт: "+cur.t)+"&body="+encodeURIComponent("Ажил: "+cur.t+" ("+cur.c+")\nНэр: "+n+"\nУтас: "+p+"\nИ-мэйл: "+m+"\nТайлбар: "+$("fm").value.trim());
- $("formBox").style.display="none";$("doneBox").style.display="";
- ["fn","fp","fe","fm"].forEach(function(i){$(i).value=""});
-};
 $("loc").addEventListener("change",function(){
  var l=SUMS[$("loc").value]||[],o='<option value="">Бүх сум, дүүрэг</option>';
  $("sum").innerHTML=o+l.map(function(x){return "<option>"+esc(x)+"</option>"}).join("");
  $("sum").disabled=!l.length;$("sum").value="";render();
 });
-$("mailBtn").addEventListener("click",function(){$("mailOk").hidden=false});$("pmail").addEventListener("click",function(){$("pmailOk").hidden=false});
-var EXTRA=[],PEND=[],APPS=[],DB=null,UID=null,OWN=false;
-function ALL(){return JOBS.concat(EXTRA)}
+$("pmail").addEventListener("click",function(){$("pmailOk").hidden=false});
+var EXTRA=[],PEND=[],DB=null,UID=null,OWN=false;
+function ALL(){var n=function(j){return parseInt(String(j.id).replace(/\D/g,""),10)||0};return EXTRA.slice().sort(function(a,b){return n(b)-n(a)}).concat(JOBS)}
 function fill(id,src){$(id).innerHTML=Array.prototype.slice.call($(src).options,1).map(function(o){return "<option>"+esc(o.text)+"</option>"}).join("")}
 fill("pcat","cat");fill("ploc","loc");
 function fillS(){var l=SUMS[$("ploc").value]||[];$("psum").innerHTML='<option value="">Сонгохгүй</option>'+l.map(function(x){return "<option>"+esc(x)+"</option>"}).join("");$("psum").disabled=!l.length}
@@ -222,10 +186,6 @@ $("psend").onclick=async function(){
  }catch(x){}
  $("pmailOk").hidden=true;$("pmail").href=mailH;$("pForm").style.display="none";$("pDone").style.display="";
 };
-function renderApps(){
- $("apps").innerHTML=APPS.length?'<h3 style="margin:16px 0 8px">Ирсэн хүсэлтүүд ('+APPS.length+')</h3>'+APPS.map(function(p,i){var a=p.it;return '<div class="pitem"><b>'+esc(a.name)+'</b> → '+esc(a.jt)+' · '+esc(a.jc)+'<br><span style="color:var(--mute)"><a href="tel:'+esc(a.phone)+'">'+esc(a.phone)+'</a> · <a href="mailto:'+esc(a.email)+'">'+esc(a.email)+'</a>'+(a.jph?' · Ажил олгогч: '+esc(a.jph):'')+'</span>'+(a.msg?'<br>'+esc(a.msg):'')+'<br><button class="btn ghost" data-del="'+i+'">Устгах</button></div>'}).join(""):"";
-}
-$("apps").addEventListener("click",async function(ev){var d=ev.target.closest("[data-del]");if(!d)return;var p=APPS[d.dataset.del];try{var r=DB.collection("applications").doc(p.uid),sn=await r.get();await r.set({items:((sn.data()||{}).items||[]).filter(function(x){return x.id!==p.it.id})})}catch(x){}});
 function renderPend(){
  $("pend").innerHTML=PEND.length?'<h3 style="margin:16px 0 8px">Баталгаажуулах зарууд ('+PEND.length+')</h3>'+PEND.map(function(p,i){return '<div class="pitem"><b>'+esc(p.it.t)+'</b> · '+esc(p.it.c)+'<br><span style="color:var(--mute)">'+esc(p.it.loc)+', '+esc(p.it.phone)+'</span><br><button class="btn" data-ok="'+i+'">Батлах</button><button class="btn ghost" data-no="'+i+'">Устгах</button></div>'}).join(""):"";
 }
@@ -245,7 +205,6 @@ $("pend").addEventListener("click",async function(ev){
   DB=d;
   if(u){UID=await u.id();OWN=await u.isOwner()}
   DB.collection("jobs").onSnapshot(function(sn){EXTRA=sn.docs.map(function(x){return x.data()});render()},function(){});
-  if(OWN)DB.collection("applications").onSnapshot(function(sn){APPS=[];var sk={};sn.docs.forEach(function(x){((x.data()||{}).items||[]).forEach(function(it){var k=it.job+"|"+String(it.phone).replace(/\D/g,"");if(!sk[k]){sk[k]=1;APPS.push({uid:x.id,it:it})}})});renderApps()},function(){});
   if(OWN)DB.collection("pending").onSnapshot(function(sn){PEND=[];sn.docs.forEach(function(x){((x.data()||{}).items||[]).forEach(function(it){PEND.push({uid:x.id,it:it})})});renderPend()},function(){});
  }catch(x){}
 })();
